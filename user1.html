@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>实时视频</title>
+<style>
+     #webcam{
+          width: 80%;
+          height: 80%;
+          display: block;
+          margin: 10% auto;
+          text-align: center;
+          position: relative;
+     }
+     #webcam img{
+         width: 100%;
+         height: auto;
+         display: block;
+         margin: 0 auto;
+     }
+</style>
+</head>
+<body>
+ 
+<div id="webcam">
+     <div>
+     </div>
+</div>
+ 
+<script type="text/javascript">
+    var imageNr = 0; // 图片的索引号
+    var finished = new Array(); // 下载图片的队列
+    var paused = false; //
+     
+    function createImageLayer() {
+      var img = new Image();
+      img.style.position = "absolute";
+      img.style.zIndex = -1;
+      img.onload = imageOnload;
+      img.onclick = imageOnclick;
+         //填你对应的ip和端口
+      img.src = "http://192.168.1.6:8002/?action=snapshot&n=" + (++imageNr);
+      var webcam = document.getElementById("webcam");
+      webcam.insertBefore(img, webcam.firstChild);
+    }
+     
+     
+    function imageOnload() {
+      this.style.zIndex = imageNr; 
+      while (1 < finished.length) {
+        var del = finished.shift(); // 删除旧照片
+        del.parentNode.removeChild(del);
+      }
+      finished.push(this);
+      if (!paused) createImageLayer();
+    }
+     
+    function imageOnclick() { 
+      paused = !paused;
+      if (!paused) createImageLayer();
+    } 
+    createImageLayer() 
+</script>
+</body>
+</html>
